@@ -523,7 +523,7 @@ class MicroMutableOpResolver : public MicroOpResolver {
   }
 
   TfLiteStatus AddSelectV2() {
-    return AddBuiltin(BuiltinOperator_SCATTER_ND, Register_SELECT_V2(), ParseSelectV2);
+    return AddBuiltin(BuiltinOperator_SELECT_V2, Register_SELECT_V2(), ParseSelectV2);
   }
 
   TfLiteStatus AddShape() {

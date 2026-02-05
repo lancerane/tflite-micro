@@ -29,6 +29,12 @@ namespace tflite {
 
 namespace {
 
+// Need to bypass std::ceil on some os eg renode 
+int32_t my_ceil(double x) {
+  int32_t xi = static_cast<int32_t>(x);
+  return xi + (x > xi);  // true converts to 1, false to 0
+}
+
 struct StridedSliceContext {
   StridedSliceContext(TfLiteContext* context, TfLiteNode* node) {
     params = reinterpret_cast<TfLiteStridedSliceParams*>(node->builtin_data);
@@ -112,8 +118,8 @@ TfLiteStatus CheckOutputSize(TfLiteContext* context,
       end = begin + 1;
     }
 
-    // This is valid for both positive and negative strides
-    int32_t dim_shape = std::ceil((end - begin) / static_cast<float>(stride));
+    // std::ceil bypass; this is valid for both positive and negative strides
+    int32_t dim_shape = my_ceil((end - begin) / static_cast<float>(stride));
     dim_shape = dim_shape < 0 ? 0 : dim_shape;
     if (!shrink_axis) {
       TF_LITE_ENSURE_EQ(context, output_shape->data[shape_size], dim_shape);
